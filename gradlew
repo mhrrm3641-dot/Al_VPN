@@ -1,99 +1,42 @@
-#!/#!/usr/bin/env bash
+name: Android Build Final
 
-##############################################################################
-##
-##  Gradle start up script for UN*X
-##
-##############################################################################
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch: # Manuel olarak da başlatabilmen için
 
-# Attempt to set APP_HOME
-# Resolve links: $0 may be a link
-PRG="$0"
-# Need this for relative symlinks.
-while [ -h "$PRG" ] ; do
-    ls=`ls -ld "$PRG"`
-    link=`expr "$ls" : '.*-> \(.*\)$'`
-    if expr "$link" : '/.*' > /dev/null; then
-        PRG="$link"
-    else
-        PRG=`dirname "$PRG"`/"$link"
-    fi
-done
-SAVED="`pwd`"
-cd "`dirname \"$PRG\"`/" >/dev/null
-APP_HOME="`pwd -P`"
-cd "$SAVED" >/dev/null
+jobs:
+  build:
+    runs-on: ubuntu-latest
 
-APP_NAME="Gradle"
-APP_BASE_NAME=`basename "$0"`
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-# Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
-DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
 
-# Use the maximum available, or at least 512MB, for the hardware.
-# This is a bit of a hack, but it works for now.
-if [ -z "$JAVA_HOME" ] ; then
-    JAVA_HOME=`type -p java | xargs readlink -f | xargs dirname | xargs dirname`
-fi
+      # Gradle Wrapper dosyasını sistem düzeyinde otomatik oluşturur
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: wrapper
 
-warn () {
-    echo "$*"
-}
+      # Hangi klasörde olursa olsun ana build.gradle'ı bulup derler
+      - name: Build APK with Gradle
+        run: |
+          if [ -d "app" ]; then
+            cd app && gradle assembleDebug --stacktrace
+          else
+            gradle assembleDebug --stacktrace
+          fi
 
-die () {
-    echo
-    echo "$*"
-    echo
-    exit 1
-}
-
-# OS specific support (must be 'true' or 'false').
-cygwin=false
-msys=false
-darwin=false
-nonstop=false
-case "`uname`" in
-  CYGWIN* )
-    cygwin=true
-    ;;
-  Darwin* )
-    darwin=true
-    ;;
-  MSYS* | MINGW* )
-    msys=true
-    ;;
-  NONSTOP* )
-    nonstop=true
-    ;;
-esac
-
-CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
-
-# Determine the Java command to use to start the JVM.
-if [ -n "$JAVA_HOME" ] ; then
-    if [ -x "$JAVA_HOME/jre/sh/java" ] ; then
-        # IBM's JDK on AIX uses strange locations for the executables
-        JAVACMD="$JAVA_HOME/jre/sh/java"
-    else
-        JAVACMD="$JAVA_HOME/bin/java"
-    fi
-    if [ ! -x "$JAVACMD" ] ; then
-        die "ERROR: JAVA_HOME is set to an invalid directory: $JAVA_HOME
-
-Please set the JAVA_HOME variable in your environment to match the
-location of your Java installation."
-    fi
-else
-    JAVACMD="java"
-    if ! command -v java >/dev/null 2>&1; then
-        die "ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
-
-Please set the JAVA_HOME variable in your environment to match the
-location of your Java installation."
-    fi
-fi
-
-# Collect all arguments for the java command, following the shell quoting and substitution rules
-eval set -- $DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS "\"-Dorg.gradle.appname=$APP_BASE_NAME\"" -classpath "\"$CLASSPATH\"" org.gradle.wrapper.GradleWrapperMain "$@"
-
-exec "$JAVACMD" "$@"
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: AI-VPN-Debug-APK
+          path: "**/build/outputs/apk/debug/*.apk"
