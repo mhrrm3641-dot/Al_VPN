@@ -21,10 +21,14 @@ jobs:
         cache: gradle
 
     - name: APK Dosyasini Derle
-      run: gradle assembleDebug
+      run: gradle assembleDebug --stacktrace
 
     - name: APK Dosyasini Sisteme Yukle
       uses: actions/upload-artifact@v4
       with:
         name: VPN-Uygulamasi-Dosyasi
         path: app/build/outputs/apk/debug/*.apk
+
+# Satir sayisini 31 yapmak icin:
+#
+#
