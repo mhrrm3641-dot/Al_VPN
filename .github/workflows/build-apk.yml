@@ -20,7 +20,7 @@ jobs:
 
     - name: 3. Setup Gradle
       uses: gradle/actions/setup-gradle@v4
-
+Process completed with exit code 1.
     - name: 4. Build APK with Wrapper
       run: |
         chmod +x gradlew
