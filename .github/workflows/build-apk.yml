@@ -2,7 +2,7 @@ name: Android APK Olusturucu
 
 on:
   push:
-    branches: [ "Ana", "main", "Main", "master" ]
+    branches: [ "Ana", "main", "Main" ]
   workflow_dispatch:
 
 jobs:
@@ -21,7 +21,6 @@ jobs:
         cache: gradle
 
     - name: APK Dosyasini Derle
-      gradle assembleDebug
       run: gradle assembleDebug
 
     - name: APK Dosyasini Sisteme Yukle
