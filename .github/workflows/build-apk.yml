@@ -20,14 +20,9 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
-    - name: Gradle Sistemini Hazirla
-      uses: gradle/actions/setup-gradle@v4
-
-    - name: Calistirma Izni Ver
-      run: chmod +x gradlew
-
-    - name: APK Dosyasini Derle
-      run: ./gradlew assembleDebug
+    - name: APK Dosyasini Derle (Sistem Gradle Kullan)
+      # Burada ./gradlew dosyasini aramiyoruz, direkt sistemdeki gradle'i calistiriyoruz
+      run: gradle assembleDebug
 
     - name: APK Dosyasini Sisteme Yukle
       uses: actions/upload-artifact@v4
