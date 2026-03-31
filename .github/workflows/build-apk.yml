@@ -20,8 +20,8 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
-    - name: APK Dosyasini Derle (Sistem Gradle Kullan)
-      # Burada ./gradlew dosyasini aramiyoruz, direkt sistemdeki gradle'i calistiriyoruz
+    - name: APK Dosyasini Derle
+      gradle assembleDebug
       run: gradle assembleDebug
 
     - name: APK Dosyasini Sisteme Yukle
